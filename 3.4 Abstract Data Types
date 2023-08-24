@@ -1,0 +1,72 @@
+#include <iostream>
+using namespace std;
+typedef int Type;
+
+template <typename Type> 
+class CVector
+{
+  private:
+    //Type *m_pVect; // Pointer to the buffer
+    int m_nCount, // Control how many elements are actually used
+      m_nMax, // Control how many are allocated as maximum
+      m_nDelta; // To control the growing
+
+    void Init(int delta) // Init our private variables, etc
+      {
+        m_nCount = 0;
+        m_nMax = delta;
+        m_nDelta = delta;
+        m_pVect = new Type[m_nMax];
+      }
+
+    void Resize() // Resize the vector when occurs an overflow
+    {
+        m_nMax += m_nDelta;
+        Type *newVect = new Type[m_nMax];
+        for (int i = 0; i < m_nCount; ++i)
+        {
+            newVect[i] = m_pVect[i];
+        }
+        delete[] m_pVect;
+        m_pVect = newVect;
+    }
+
+  public:
+    Type *m_pVect;
+    CVector(int delta = 10);// Constructor
+    ~CVector();
+    void Insert(Type &elem); // Insert a new element
+    // More methods go here
+};
+
+template <typename Type> 
+CVector<Type>::CVector(int delta)
+{
+Init(delta);
+}
+
+template <typename Type> 
+CVector<Type>::~CVector(){delete[] m_pVect;} // Don't forget to free the memory
+
+template <typename Type> 
+void CVector<Type>::Insert(Type &elem)
+{
+  if( m_nCount == m_nMax ) // Verify the overflow
+    Resize(); // Resize the vector before inserting elem
+  m_pVect[m_nCount++] = elem; // Insert the element at the end
+}
+
+ 
+int main()
+{
+  CVector<Type> v; // Create an instance of CVector with default delta
+  for(int i=0;i<3;i++)
+    v.Insert(i);
+
+  cout << v.m_pVect[0] << endl;
+  cout << v.m_pVect[1] << endl;
+  cout << v.m_pVect[2] << endl;
+  cout << v.m_pVect[3] << endl;
+  
+  return 0;
+}
